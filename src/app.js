@@ -1,38 +1,25 @@
 import express from "express";
+import { adminAuth, userAuth } from "./middlewares/auth.js";
 
 const app = express();
 
 //currenty using node --watch install nodemon if necessary
-// app.use("/user", (req, res) => {
-//   res.send("LOL");
-// });
-app.get(
-  "/user",
-  [
-    (req, res, next) => {
-      console.log("handling route 1");
-      next();
-    },
+app.use("/admin", adminAuth);
 
-    (req, res, next) => {
-      console.log("handling route 2");
-      next();
-    },
-  ],
-  (req, res, next) => {
-    console.log("handling route 3");
-    next();
-  },
-  (req, res, next) => {
-    console.log("handling route 4");
-    next();
-  },
-  (req, res, next) => {
-    res.send("1st route handler");
-    console.log("handling route 5");
-    next();
-  },
-);
+app.get("/user/login", (req, res) => {
+  res.send("User login successfully");
+});
+
+app.get("/user/data", userAuth, (req, res) => {
+  res.send("Fetched user data");
+});
+app.get("/admin/getAllUser", (req, res) => {
+  res.send("All data fetched successfully");
+});
+app.get("/admin/deleteUser", (req, res) => {
+  res.send("User deleted successfully");
+});
+
 // app.get("/user", (req, res) => {
 //   http://localhost:7777/user?userid=101&password=secret
 //   console.log(req.query); //Object: null prototype] { userid: '101', password: 'secret' }
@@ -43,10 +30,6 @@ app.get(
 // app.get("/user/:userid/name/:password", (req, res) => {
 //   console.log(req.params); //[Object: null prototype] { userid: 'fly' }
 //   console.log({...req.params});
-//   res.send({ firstname: "Abhishek", lastname: "Ojha" });
-// });
-
-// app.get(/.*fly$/, (req, res) => {
 //   res.send({ firstname: "Abhishek", lastname: "Ojha" });
 // });
 
