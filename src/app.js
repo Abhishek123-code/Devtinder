@@ -6,12 +6,39 @@ const app = express();
 // app.use("/user", (req, res) => {
 //   res.send("LOL");
 // });
-app.get("/user", (req, res) => {
-  //http://localhost:7777/user?userid=101&password=secret
-  console.log(req.query); //Object: null prototype] { userid: '101', password: 'secret' }
-  console.log({ ...req.query }); //{ userid: '101', password: 'secret' }
-  res.send({ firstname: "Abhishek", lastname: "Ojha" });
-});
+app.get(
+  "/user",
+  [
+    (req, res, next) => {
+      console.log("handling route 1");
+      next();
+    },
+
+    (req, res, next) => {
+      console.log("handling route 2");
+      next();
+    },
+  ],
+  (req, res, next) => {
+    console.log("handling route 3");
+    next();
+  },
+  (req, res, next) => {
+    console.log("handling route 4");
+    next();
+  },
+  (req, res, next) => {
+    res.send("1st route handler");
+    console.log("handling route 5");
+    next();
+  },
+);
+// app.get("/user", (req, res) => {
+//   http://localhost:7777/user?userid=101&password=secret
+//   console.log(req.query); //Object: null prototype] { userid: '101', password: 'secret' }
+//   console.log({ ...req.query }); //{ userid: '101', password: 'secret' }
+//   res.send({ firstname: "Abhishek", lastname: "Ojha" });
+// });
 
 // app.get("/user/:userid/name/:password", (req, res) => {
 //   console.log(req.params); //[Object: null prototype] { userid: 'fly' }
