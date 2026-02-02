@@ -63,6 +63,22 @@ app.patch("/user", async (req, res) => {
   const data = req.body;
 
   try {
+    const ALLOWED_UPDATE = [
+      "gender",
+      "skills",
+      "description",
+      "PhotoURL",
+      "age",
+    ];
+
+    const isUpdateAllowed = Object.keys(data).every((key) =>
+      ALLOWED_UPDATE.includes(key),
+    );
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed");
+    }
+
     const user = await User.findOneAndUpdate({ email: userID }, data, {
       returnDocument: "before",
       runValidators: true,
@@ -70,7 +86,7 @@ app.patch("/user", async (req, res) => {
     console.log(user);
     res.send("User updated successfully");
   } catch (err) {
-    res.status(404).send("Someting went wrong" + err.message);
+    res.status(404).send("Someting went wrong: " + err.message);
   }
   // try {
   //   const user= await User.findByIdAndUpdate(userID, data, { returnDocument: "after" });

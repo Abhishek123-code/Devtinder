@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema(
     PhotoURL: {
       type: String,
       default: "https://cdn-icons-png.freepik.com/256/5580/5580988.png",
+      validate: (value) => {
+        if (!/\.(jpg|jpeg|png|webp|gif|svg)$/i.test(value)) {
+          throw new Error("Invalid Image URL");
+        }
+      },
     },
     skills: {
       type: [String],
