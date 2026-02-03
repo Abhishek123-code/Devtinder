@@ -1,6 +1,7 @@
 import express from "express";
 import connectDB from "./config/database.js";
 import User from "./models/user.js";
+import bcrypt from "bcrypt";
 const app = express();
 
 app.use(express.json());
@@ -97,10 +98,36 @@ app.patch("/user", async (req, res) => {
   // }
 });
 
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  console.log(password);
+  try {
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      res.send("Invalid email Credentials");
+    }
+    const isPassword = await bcrypt.compare(password, user.password);
+    console.log(isPassword);
+    if (!isPassword) {
+      res.send("Invalid password Credentials");
+    } else {
+      res.send("Login Successful!!");
+    }
+  } catch (err) {
+    res.status(404).send("Someting went wrong: " + err.message);
+  }
+});
+
 app.post("/signup", async (req, res) => {
   //create an instance of User model
   //NEVER TRUST request BODY, VALIDATE THE DATA BEFORE SAVING IT TO THE DATABASE
-  const user = new User(req.body);
+  //using bcrypt , use argon2 for better security
+  const { firstName, lastName, email, password } = req.body;
+
+  const hashPassword = await bcrypt.hash(password, 10);
+  console.log(hashPassword);
+
+  const user = new User({ firstName, lastName, email, password: hashPassword });
   console.log(user);
   try {
     await user.save();
