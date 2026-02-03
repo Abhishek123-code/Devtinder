@@ -99,6 +99,7 @@ app.patch("/user", async (req, res) => {
 
 app.post("/signup", async (req, res) => {
   //create an instance of User model
+  //NEVER TRUST request BODY, VALIDATE THE DATA BEFORE SAVING IT TO THE DATABASE
   const user = new User(req.body);
   console.log(user);
   try {

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import validator from "validator";
 
 const userSchema = new mongoose.Schema(
   {
@@ -18,11 +19,20 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate: (value) => {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid Email Address");
+        }
+      },
     },
     password: {
       type: String,
       required: true,
-      minLength: 6,
+      validate: (value) => {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("password is not Strong enough");
+        }
+      },
     },
     age: {
       type: Number,
@@ -45,7 +55,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "https://cdn-icons-png.freepik.com/256/5580/5580988.png",
       validate: (value) => {
-        if (!/\.(jpg|jpeg|png|webp|gif|svg)$/i.test(value)) {
+        if (
+          !(
+            validator.isURL(value) &&
+            /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(value)
+          )
+        ) {
           throw new Error("Invalid Image URL");
         }
       },
