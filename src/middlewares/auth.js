@@ -1,23 +1,22 @@
-const adminAuth = (req, res, next) => {
-  console.log("Authenticating Admin");
-  const token = "xyzabc";
-  const isAdmin = token === "xyz";
-  if (!isAdmin) {
-    res.status(401).send("Not an admin");
-  } else {
+import jwt from "jsonwebtoken";
+import User from "../models/user.js";
+
+const userAuth = async (req, res, next) => {
+  const { token } = req.cookies;
+  try {
+    if (!token) {
+      throw new Error("Invalid token");
+    }
+    const decodedMessage = jwt.verify(token, "random");
+    const user = await User.findById(decodedMessage._id);
+    if (!user) {
+      throw new Error("user doesn't exist");
+    }
+    req.user = user;
     next();
+  } catch (err) {
+    res.status(404).send("Someting went wrong: " + err.message);
   }
 };
 
-const userAuth = (req, res, next) => {
-  console.log("Authenticating User");
-  const token = "xyz";
-  const isUser = token === "xyz";
-  if (!isUser) {
-    res.status(401).send("Not an User");
-  } else {
-    next();
-  }
-};
-
-export { adminAuth, userAuth };
+export default userAuth;
