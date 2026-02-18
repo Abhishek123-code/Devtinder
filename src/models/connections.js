@@ -3,16 +3,18 @@ import mongoose from "mongoose";
 const connectionSchema = new mongoose.Schema({
   fromUserId: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
   toUserId: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
   status: {
     type: String,
     enum: {
-      values: ["interested", "ignored", "acccepted", "rejected"],
+      values: ["interested", "ignored", "accepted", "rejected"],
       message: "{VALUE} is not a valid status",
     },
     required: true,

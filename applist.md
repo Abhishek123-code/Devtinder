@@ -15,13 +15,12 @@ DELETE /profile
 
 ## connection Requset route
 
-POST /requset/ignored/:userID
-POST /request/accepted/:userID
-POST /request/interested/:requestID
-POST /request/rejected/:requestID
+POST /requset/send/:status/:userID
+
+POST /request/review/:status/:requestID
 
 ## user route
 
 GET /feed
-GET /user/cnnection
+GET /user/connection
 get /user/requests
