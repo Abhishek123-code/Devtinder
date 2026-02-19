@@ -74,6 +74,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+userSchema.pre("save", async function () {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+});
+
 userSchema.methods.getJWT = function () {
   const userId = this._id;
   const token = jwt.sign({ _id: userId }, "random", { expiresIn: "7d" });

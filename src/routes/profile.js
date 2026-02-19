@@ -1,7 +1,6 @@
 import express from "express";
 import userAuth from "../middlewares/auth.js";
 import profileEditValidations from "../utils/validations.js";
-import bcrypt from "bcrypt";
 
 const profileRouter = express.Router();
 
@@ -32,12 +31,11 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
 
 profileRouter.patch("/profile/password", userAuth, async (req, res) => {
   const user = req.user;
-  console.log(user);
   const { oldPassword, password } = req.body;
   try {
-    if (user.comparePassword(oldPassword)) {
-      const newPassword = await bcrypt.hash(password, 10);
-      user.password = newPassword;
+    const isPasswordValid = await user.comparePassword(oldPassword);
+    if (isPasswordValid) {
+      user.password = password;
       await user.save();
     } else {
       throw new Error("Wrong Old Password");

@@ -9,12 +9,37 @@ const USER_REF_DATA =
   "firstName lastName PhotoURL gender age description skills";
 
 //FEED API- GET/ feed- get all the users from the database
-userRouter.get("/feed", async (req, res) => {
+userRouter.get("/feed", userAuth, async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  limit = limit > 50 ? 50 : limit;
+
+  const skip = (page - 1) * limit;
+
   try {
-    const user = await User.find({});
-    res.send(user);
+    const user = await Connections.find({
+      $or: [{ fromUserId: req.user._id }, { toUserId: req.user._id }],
+    }).select("fromUserId toUserId");
+
+    const hideUser = new Set();
+    user.forEach((user) => {
+      hideUser.add(user.fromUserId.toString());
+      hideUser.add(user.toUserId.toString());
+    });
+
+    const feedUser = await User.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUser) } },
+        { _id: { $ne: req.user._id } },
+      ],
+    })
+      .select(USER_REF_DATA)
+      .skip(skip)
+      .limit(limit);
+
+    res.json({ message: "Users fetched successfully", data: feedUser });
   } catch (err) {
-    res.status(500).send("Someting went wrong" + err.message);
+    res.status(500).send("ERROR" + err.message);
   }
 });
 
@@ -32,7 +57,7 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
     res.status(400).send("ERROR" + err.message);
   }
 });
-
+//get all accepted requests
 userRouter.get("/user/requests/connection", userAuth, async (req, res) => {
   try {
     const connection = await Connections.find({
@@ -42,10 +67,13 @@ userRouter.get("/user/requests/connection", userAuth, async (req, res) => {
       .populate("fromUserId", USER_REF_DATA)
       .populate("toUserId", USER_REF_DATA);
 
-    console.log(connection);
+    const data = connection.map((item) => {
+      if (item.fromUserId.equals(req.user._id)) {
+        return item.toUserId;
+      }
+      return item.fromUserId;
+    });
 
-    const data = connection.map((item) => item.fromUserId);
-    console.log(data);
     res.json({
       message: "successfully fetched data",
       data,

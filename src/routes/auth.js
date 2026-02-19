@@ -1,5 +1,4 @@
 import express from "express";
-import bcrypt from "bcrypt";
 import User from "../models/user.js";
 
 const authRouter = express.Router();
@@ -8,13 +7,16 @@ authRouter.post("/signup", async (req, res) => {
   //create an instance of User model
   //NEVER TRUST request BODY, VALIDATE THE DATA BEFORE SAVING IT TO THE DATABASE
   //using bcrypt , use argon2 for better security
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, gender, skills } = req.body;
 
-  const hashPassword = await bcrypt.hash(password, 10);
-  console.log(hashPassword);
-
-  const user = new User({ firstName, lastName, email, password: hashPassword });
-  console.log(user);
+  const user = new User({
+    firstName,
+    lastName,
+    email,
+    password,
+    gender,
+    skills,
+  });
   try {
     await user.save();
     res.send("User Added Successfully");
@@ -32,7 +34,6 @@ authRouter.post("/login", async (req, res) => {
     }
     const isPassword = await user.comparePassword(password);
     if (!isPassword) {
-      console.log("wrong password");
       throw new Error("Invalid Credentials");
     } else {
       //create a JWT token
