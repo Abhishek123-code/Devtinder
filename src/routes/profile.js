@@ -9,7 +9,7 @@ profileRouter.get("/profile", userAuth, async (req, res) => {
     const user = req.user;
     res.send(user);
   } catch (err) {
-    res.status(404).send("Someting went wrong: " + err.message);
+    res.status(401).send("User not authorized " + err.message);
   }
 });
 
