@@ -38,9 +38,14 @@ authRouter.post("/login", async (req, res) => {
     } else {
       //create a JWT token
       const token = await user.getJWT();
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        httpOnly: true, // Prevents JavaScript from accessing the cookie (Security)
+        secure: false, // MUST be false for localhost (since you are using http, not https)
+        sameSite: "lax",
+        expires: new Date(Date.now() + 8 * 3600000),
+      });
 
-      res.send("Login Successful!!");
+      res.send(user);
     }
   } catch (err) {
     res.status(404).send("Someting went wrong: " + err.message);
