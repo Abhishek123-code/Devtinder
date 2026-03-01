@@ -82,7 +82,9 @@ userSchema.pre("save", async function () {
 
 userSchema.methods.getJWT = function () {
   const userId = this._id;
-  const token = jwt.sign({ _id: userId }, "random", { expiresIn: "7d" });
+  const token = jwt.sign({ _id: userId }, process.env.JWT_SECRET_KEY, {
+    expiresIn: "7d",
+  });
   return token;
 };
 

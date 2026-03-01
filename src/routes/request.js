@@ -2,6 +2,7 @@ import express from "express";
 import userAuth from "../middlewares/auth.js";
 import Connections from "../models/connections.js";
 import User from "../models/user.js";
+import { run } from "../utils/sesSendEmail.js";
 
 const requestRouter = express.Router();
 
@@ -41,6 +42,13 @@ requestRouter.post(
         status,
       });
       await connectionRequest.save();
+
+      const sendEmail = await run(
+        `A new friend request from ${req.user.firstName}`,
+        `${req.user.firstName} ${status} the user ${isUser.firstName}`,
+      );
+      console.log(sendEmail);
+
       res.json({
         message: `${req.user.firstName} ${status} the user ${isUser.firstName}`,
         data: connectionRequest,
@@ -77,6 +85,9 @@ requestRouter.post(
 
       connectionRequest.status = status;
       await connectionRequest.save();
+
+      const sendEmail = await run();
+      console.log(sendEmail);
 
       res.json({
         message: `Request ${status}`,
