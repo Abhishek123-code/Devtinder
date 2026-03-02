@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import "./utils/cronJob.js";
 import connectDB from "./config/database.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -7,6 +8,7 @@ import userRouter from "./routes/user.js";
 import authRouter from "./routes/auth.js";
 import profileRouter from "./routes/profile.js";
 import requestRouter from "./routes/request.js";
+import paymentRouter from "./routes/payment.js";
 const app = express();
 app.use(
   cors({
@@ -21,6 +23,7 @@ app.use("/", authRouter);
 app.use("/", userRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
+app.use("/", paymentRouter);
 
 connectDB()
   .then(() => {
