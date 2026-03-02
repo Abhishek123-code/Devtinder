@@ -62,18 +62,20 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     payment.status = paymentDetails.status;
     await payment.save();
+    console.log("payment saved");
 
     const user = await User.findOne({ _id: payment.userId });
     user.isPremium = true;
     user.membershipType = payment.notes.membershipType;
     await user.save();
+    console.log("user saved");
 
     if (!isWebhookValid) {
       return res.status(500).json({ message: "Not a valid webhook signature" });
     }
     return res.status(200).json({ message: "received webhook signature" });
   } catch (err) {
-    returnres.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 });
 export default paymentRouter;
