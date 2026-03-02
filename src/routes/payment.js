@@ -36,8 +36,6 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     });
 
     const savedPayment = await payment.save();
-
-    console.log(order);
     res.json({ ...savedPayment.toJSON(), keyId: process.env.TEST_KEY_ID });
   } catch (Err) {
     console.log(Err);
@@ -62,13 +60,11 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     payment.status = paymentDetails.status;
     await payment.save();
-    console.log("payment saved");
 
     const user = await User.findOne({ _id: payment.userId });
     user.isPremium = true;
     user.membershipType = payment.notes.membershipType;
     await user.save();
-    console.log("user saved");
 
     if (!isWebhookValid) {
       return res.status(500).json({ message: "Not a valid webhook signature" });

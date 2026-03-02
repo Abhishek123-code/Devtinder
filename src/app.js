@@ -9,6 +9,10 @@ import authRouter from "./routes/auth.js";
 import profileRouter from "./routes/profile.js";
 import requestRouter from "./routes/request.js";
 import paymentRouter from "./routes/payment.js";
+import http from "http";
+import initializeSocket from "./utils/socket.js";
+import chatRouter from "./routes/chat.js";
+
 const app = express();
 app.use(
   cors({
@@ -24,11 +28,15 @@ app.use("/", userRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", paymentRouter);
+app.use("/", chatRouter);
+
+const server = http.createServer(app);
+initializeSocket(server);
 
 connectDB()
   .then(() => {
     console.log("Database connected successfully");
-    app.listen(7777, () => {
+    server.listen(7777, () => {
       console.log("successfully connected to the server");
     });
   })

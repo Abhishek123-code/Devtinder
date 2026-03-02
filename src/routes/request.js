@@ -81,7 +81,6 @@ requestRouter.post(
       await connectionRequest.save();
 
       const sendEmail = await run();
-      console.log(sendEmail);
 
       res.json({
         message: `Request ${status}`,
